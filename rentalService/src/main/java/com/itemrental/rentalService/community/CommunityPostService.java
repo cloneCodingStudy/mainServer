@@ -19,6 +19,7 @@ public class CommunityPostService {
 
   private final CommunityPostRepository repository;
   private final UserRepository userRepository;
+  private final CommunityImageService imageService;
 
   //게시글 생성
   @Transactional
@@ -30,13 +31,15 @@ public class CommunityPostService {
     post.setUser(user);
     post.setTitle(dto.getTitle());
     post.setContent(dto.getContent());
+    post.setImageUrl(imageService.uploadImage(dto.getImage()));
     repository.save(post);
 
     return new CommunityPostCreateResponseDto(
         post.getId(),
         user.getUsername(),
         post.getTitle(),
-        post.getContent());
+        post.getContent(),
+        post.getImageUrl());
   }
 
   //게시글 읽기
@@ -49,6 +52,7 @@ public class CommunityPostService {
         user.getUsername(),
         post.getTitle(),
         post.getContent(),
+        post.getImageUrl(),
         post.getCreatedAt()
     );
   }
@@ -61,7 +65,6 @@ public class CommunityPostService {
 
     CommunityPost post = repository.findById(postId)
         .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다"));
-    ;
     User postUser = post.getUser();
 
     if (!postUser.getId().equals(currentUser.getId())) {
@@ -69,6 +72,13 @@ public class CommunityPostService {
     }
     post.setTitle(dto.getTitle());
     post.setContent(dto.getContent());
+    if (dto.getImage() != null && !dto.getImage().isEmpty()) {
+      imageService.deleteImage(post.getImageUrl());
+      post.setImageUrl(imageService.uploadImage(dto.getImage()));
+    } else if (Boolean.TRUE.equals(dto.getRemoveImage())) {
+      imageService.deleteImage(post.getImageUrl());
+      post.setImageUrl(null);
+    }
   }
 
   @Transactional
@@ -79,12 +89,12 @@ public class CommunityPostService {
 
     CommunityPost post = repository.findById(postId)
         .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다"));
-    ;
     User postUser = post.getUser();
 
     if (!postUser.getId().equals(currentUser.getId())) {
       throw new AccessDeniedException("작성자만 삭제할 수 있습니다.");
     }
+    imageService.deleteImage(post.getImageUrl());
     repository.delete(post);
   }
 }

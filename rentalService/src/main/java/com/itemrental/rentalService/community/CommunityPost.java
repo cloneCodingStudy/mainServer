@@ -36,6 +36,10 @@ public class CommunityPost {
   private String content;
 
   @Getter
+  @Setter
+  private String imageUrl;
+
+  @Getter
   @Column(nullable = false, updatable = false)
   private LocalDateTime createdAt;
 

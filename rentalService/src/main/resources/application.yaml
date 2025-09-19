@@ -26,6 +26,14 @@ logging:
     org.springframework.security: DEBUG
 
 
+cloud:
+  aws:
+    region:
+      static: ${AWS_REGION}
+    s3:
+      bucket: ${AWS_S3_BUCKET}
+
+
 jwt:
   header: Authorization
   secret: ${TOKEN_SECRET}

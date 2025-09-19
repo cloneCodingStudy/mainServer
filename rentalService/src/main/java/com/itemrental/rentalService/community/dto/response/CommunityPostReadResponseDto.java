@@ -10,5 +10,6 @@ public class CommunityPostReadResponseDto {
   private String username;
   private String title;
   private String content;
+  private String imageUrl;
   private LocalDateTime createdAt;
 }

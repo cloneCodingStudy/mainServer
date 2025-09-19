@@ -5,6 +5,7 @@ import com.itemrental.rentalService.community.dto.request.CommunityPostUpdateReq
 import com.itemrental.rentalService.community.dto.response.CommunityPostCreateResponseDto;
 import com.itemrental.rentalService.community.dto.response.CommunityPostReadResponseDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,8 +17,9 @@ public class CommunityController {
   private final CommunityPostService postService;
 
   //커뮤니티 생성
-  @PostMapping
-  public ResponseEntity<CommunityPostCreateResponseDto> createCommunityPost(@RequestBody CommunityPostCreateRequestDto dto) {
+  @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+  public ResponseEntity<CommunityPostCreateResponseDto> createCommunityPost(
+      @ModelAttribute CommunityPostCreateRequestDto dto) {
     return ResponseEntity.ok(postService.createCommunityPost(dto));
   }
 
@@ -28,8 +30,10 @@ public class CommunityController {
   }
 
   //커뮤니티 수정
-  @PutMapping("/{postId}")
-  public ResponseEntity<String> updatePost(@PathVariable Long postId, @RequestBody CommunityPostUpdateRequestDto dto) {
+  @PutMapping(value = "/{postId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+  public ResponseEntity<String> updatePost(
+      @PathVariable Long postId,
+      @ModelAttribute CommunityPostUpdateRequestDto dto) {
     postService.updateCommunityPost(postId, dto);
     return ResponseEntity.ok("게시글 수정 완료");
   }
